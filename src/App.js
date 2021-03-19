@@ -36,7 +36,7 @@ const App = () => {
         // objects we'll be drawing.
         const buffers = initBuffers(gl, currentModel);
 
-        drawScene(gl, programInfo, buffers, 5);
+        drawScene(gl, programInfo, buffers, currentModel.positions.length / 3, 5);
 
     
     }, [])

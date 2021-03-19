@@ -123,7 +123,7 @@ const initBuffers = (gl, model) => {
   };
 }
 
-const drawScene = (gl, programInfo, buffers, angle) => {
+const drawScene = (gl, programInfo, buffers, count, angle) => {
   gl.clearColor(0.5, 0.5, 0.2, 0.8);  // Clear to black, fully opaque
   gl.clearDepth(1.0);                 // Clear everything
   gl.enable(gl.DEPTH_TEST);           // Enable depth testing
@@ -275,7 +275,7 @@ const drawScene = (gl, programInfo, buffers, angle) => {
       modelViewMatrix);
 
   {
-    const vertexCount = 96
+    const vertexCount = count
     const type = gl.UNSIGNED_SHORT;
     const offset = 0;
     gl.drawElements(gl.TRIANGLES, vertexCount, type, offset);
