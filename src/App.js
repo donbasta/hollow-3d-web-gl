@@ -1,25 +1,49 @@
-import logo from './logo.svg';
-import './App.css';
+import React, {useState, useRef, useEffect} from 'react'
+import './App.css'
+import {initShaderProgram, initBuffers, drawScene} from './utils'
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          aEsdisst <code>src/App.js</code> and sfave to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+const App = () => {
+
+
+    const [programState, setProgramState] = useState(null)
+    const canvasRef = useRef(null)
+
+    const [currentModel, changeModel] = useState({
+        positions: [-0.8,0.8,1,-1,1,1,0.8,0.8,1,0.8,0.8,1,1,1,1,-1,1,1,0.8,0.8,1,1,1,1,0.8,-0.8,1,1,1,1,1,-1,1,0.8,-0.8,1,0.8,-0.8,1,1,-1,1,-0.8,-0.8,1,1,-1,1,-1,-1,1,-0.8,-0.8,1,-0.8,-0.8,1,-1,-1,1,-0.8,0.8,1,-1,-1,1,-1,1,1,-0.8,0.8,1,1,1,1,1,-1,1,1,1,-1,1,1,-1,1,-1,-1,1,-1,1,-1,-1,1,-1,1,1,-1,-1,-1,-1,-1,-1,-1,1,-1,-1,1,1,1,1,1,-1,1,1,1,1,-1,1,1,-1,-1,1,-1,-1,1,1,-1,-1,1,1,-1,1,-1,-1,-1,-1,-1,-1,1,-1,-1,1,-1,1,-0.4,0.4,-1,-1,1,-1,0.4,0.4,-1,0.4,0.4,-1,1,1,-1,-1,1,-1,0.4,0.4,-1,1,1,-1,0.4,-0.4,-1,1,1,-1,1,-1,-1,0.4,-0.4,-1,0.4,-0.4,-1,1,-1,-1,-0.4,-0.4,-1,1,-1,-1,-1,-1,-1,-0.4,-0.4,-1,-0.4,-0.4,-1,-1,-1,-1,-0.4,0.4,-1,-1,-1,-1,-1,1,-1,-0.4,0.4,-1,0.8,0.8,1,0.8,-0.8,1,0.4,0.4,-1,0.4,0.4,-1,0.4,-0.4,-1,0.8,-0.8,1,-0.8,0.8,1,-0.8,-0.8,1,-0.4,-0.4,-1,-0.4,-0.4,-1,-0.4,0.4,-1,-0.8,0.8,1,0.8,0.8,1,0.4,0.4,-1,-0.4,0.4,-1,-0.4,0.4,-1,-0.8,0.8,1,0.8,0.8,1,0.8,-0.8,1,0.4,-0.4,-1,-0.4,-0.4,-1,-0.4,-0.4,-1,-0.8,-0.8,1,0.8,-0.8,1],
+        colors: [0.5,0.2,0.3,1,0.5,0.2,0.3,1,0.5,0.2,0.3,1,0.5,0.2,0.3,1,0.5,0.2,0.3,1,0.5,0.2,0.3,1,0.5,0.2,0.3,1,0.5,0.2,0.3,1,0.5,0.2,0.3,1,0.5,0.2,0.3,1,0.5,0.2,0.3,1,0.5,0.2,0.3,1,0.5,0.2,0.3,1,0.5,0.2,0.3,1,0.5,0.2,0.3,1,0.5,0.2,0.3,1,0.5,0.2,0.3,1,0.5,0.2,0.3,1,0.5,0.2,0.3,1,0.5,0.2,0.3,1,0.5,0.2,0.3,1,0.5,0.2,0.3,1,0.5,0.2,0.3,1,0.5,0.2,0.3,1,0.6,0.4,0.3,1,0.6,0.4,0.3,1,0.6,0.4,0.3,1,0.6,0.4,0.3,1,0.6,0.4,0.3,1,0.6,0.4,0.3,1,0.7,0.3,0.3,1,0.7,0.3,0.3,1,0.7,0.3,0.3,1,0.7,0.3,0.3,1,0.7,0.3,0.3,1,0.7,0.3,0.3,1,0.8,0.2,0.2,1,0.8,0.2,0.2,1,0.8,0.2,0.2,1,0.8,0.2,0.2,1,0.8,0.2,0.2,1,0.8,0.2,0.2,1,0.8,0.1,0.3,1,0.8,0.1,0.3,1,0.8,0.1,0.3,1,0.8,0.1,0.3,1,0.8,0.1,0.3,1,0.8,0.1,0.3,1,0.9,0.5,0.3,1,0.9,0.5,0.3,1,0.9,0.5,0.3,1,0.9,0.5,0.3,1,0.9,0.5,0.3,1,0.9,0.5,0.3,1,0.9,0.5,0.3,1,0.9,0.5,0.3,1,0.9,0.5,0.3,1,0.9,0.5,0.3,1,0.9,0.5,0.3,1,0.9,0.5,0.3,1,0.9,0.5,0.3,1,0.9,0.5,0.3,1,0.9,0.5,0.3,1,0.9,0.5,0.3,1,0.9,0.5,0.3,1,0.9,0.5,0.3,1,0.9,0.5,0.3,1,0.9,0.5,0.3,1,0.9,0.5,0.3,1,0.9,0.5,0.3,1,0.9,0.5,0.3,1,0.9,0.5,0.3,1,1,0.1,0.5,1,1,0.1,0.5,1,1,0.1,0.5,1,1,0.1,0.5,1,1,0.1,0.5,1,1,0.1,0.5,1,0.9,1,0.4,1,0.9,1,0.4,1,0.9,1,0.4,1,0.9,1,0.4,1,0.9,1,0.4,1,0.9,1,0.4,1,0.65,0.32,0.412,1,0.65,0.32,0.412,1,0.65,0.32,0.412,1,0.65,0.32,0.412,1,0.65,0.32,0.412,1,0.65,0.32,0.412,1,0.45,0.12,0.22,1,0.45,0.12,0.22,1,0.45,0.12,0.22,1,0.45,0.12,0.22,1,0.45,0.12,0.22,1,0.45,0.12,0.22,1]
+    })
+
+    useEffect(() => {
+        const canvas = canvasRef.current 
+        const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl') 
+
+
+        const shaderProgram = initShaderProgram(gl) 
+        
+        const programInfo = {
+        program: shaderProgram,
+        attribLocations: {
+            vertexPosition: gl.getAttribLocation(shaderProgram, 'aVertexPosition'),
+            vertexColor: gl.getAttribLocation(shaderProgram, 'aVertexColor'),
+        },
+        uniformLocations: {
+            projectionMatrix: gl.getUniformLocation(shaderProgram, 'uProjectionMatrix'),
+            modelViewMatrix: gl.getUniformLocation(shaderProgram, 'uModelViewMatrix'),
+        }
+        };
+    
+        // Here's where we call the routine that builds all the
+        // objects we'll be drawing.
+        const buffers = initBuffers(gl, currentModel);
+
+        drawScene(gl, programInfo, buffers, currentModel.positions.length / 3, 5);
+
+    
+    }, [])
+
+    return (
+        <canvas ref={canvasRef} width="640" height="480"></canvas>
+    )
 }
 
-export default App;
+export default App
