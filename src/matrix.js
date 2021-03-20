@@ -2,6 +2,16 @@
 // https://developer.mozilla.org/en-US/docs/Web/API/WebGL_API/Matrix_math_for_the_web
 
 // point • matrix
+
+export const create = () => {
+    return [
+        1.0, 0.0, 0.0, 0.0,
+        0.0, 1.0, 0.0, 0.0,
+        0.0, 0.0, 1.0, 0.0,
+        0.0, 0.0, 0.0, 1.0
+    ];
+};
+
 const multiplyMatrixAndPoint = (matrix, point) => {
     // Give a simple variable name to each part of the matrix, a column and row number
     let c0r0 = matrix[ 0], c1r0 = matrix[ 1], c2r0 = matrix[ 2], c3r0 = matrix[ 3];
@@ -99,4 +109,18 @@ const rotateZMatrix = (a) => {
         0,      0,          1,  0,
         0,      0,          0,  1
     ];
+};
+
+export const rotate = (mat, angle, axis) => {
+    if (axis === 'x') {
+        return multiplyMatrices(mat, rotateXMatrix(angle));
+    } else if (axis === 'y') {
+        return multiplyMatrices(mat, rotateXMatrix(angle));
+    } else if (axis === 'z') {
+        return multiplyMatrices(mat, rotateZMatrix(angle));
+    }
+};
+
+export const translate = (mat, vec) => {
+    return multiplyMatrices(mat, translationMatrix(vec[0], vec[1], vec[2]));
 }

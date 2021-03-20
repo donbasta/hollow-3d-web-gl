@@ -1,4 +1,5 @@
-import { mat4 } from 'gl-matrix';
+// import { mat4 } from 'gl-matrix';
+import * as mat4 from './matrix.js';
 
 const initShaderProgram = (gl) => {
     const vsSource = `
@@ -180,26 +181,35 @@ const drawScene = (gl, programInfo, buffers, count, angle) => {
 
   // Set the drawing position to the "identity" point, which is
   // the center of the scene.
-  const modelViewMatrix = mat4.create();
+  let modelViewMatrix = mat4.create();
 
   // Now move the drawing position a bit to where we want to
   // start drawing the square.
 
-  mat4.translate(modelViewMatrix,     // destination matrix
-                 modelViewMatrix,     // matrix to translate
-                 [-0.0, 0.0, -6.0]);  // amount to translate
-  mat4.rotate(modelViewMatrix,  // destination matrix
-              modelViewMatrix,  // matrix to rotate
-              angle.x * Math.PI / 180,     // amount to rotate in radians
-              [1, 0, 0]);       // axis to rotate around (Z)
-  mat4.rotate(modelViewMatrix,  // destination matrix
-      modelViewMatrix,  // matrix to rotate
-      angle.y * Math.PI / 180,     // amount to rotate in radians
-      [0, 1, 0]);       // axis to rotate around (Z)
-  mat4.rotate(modelViewMatrix,  // destination matrix
-      modelViewMatrix,  // matrix to rotate
-      angle.z * Math.PI / 180,     // amount to rotate in radians
-      [0, 0, 1]);       // axis to rotate around (Z)
+  // mat4.translate(modelViewMatrix,     // destination matrix
+  //                modelViewMatrix,     // matrix to translate
+  //                [-0.0, 0.0, -6.0]);  // amount to translate
+  modelViewMatrix = mat4.translate(modelViewMatrix, [-0.0, 0.0, -6.0]);
+
+
+  // mat4.rotate(modelViewMatrix,  // destination matrix
+  //             modelViewMatrix,  // matrix to rotate
+  //             angle.x * Math.PI / 180,     // amount to rotate in radians
+  //             [1, 0, 0]);       // axis to rotate around (Z)
+    modelViewMatrix = mat4.rotate(modelViewMatrix, angle.x * Math.PI / 180, 'x');
+    
+  // mat4.rotate(modelViewMatrix,  // destination matrix
+  //     modelViewMatrix,  // matrix to rotate
+  //     angle.y * Math.PI / 180,     // amount to rotate in radians
+  //     [0, 1, 0]);       // axis to rotate around (Z)
+      modelViewMatrix = mat4.rotate(modelViewMatrix, angle.y * Math.PI / 180, 'y');
+
+  // mat4.rotate(modelViewMatrix,  // destination matrix
+  //     modelViewMatrix,  // matrix to rotate
+  //     angle.z * Math.PI / 180,     // amount to rotate in radians
+  //     [0, 0, 1]);       // axis to rotate around (Z)
+      modelViewMatrix = mat4.rotate(modelViewMatrix, angle.z * Math.PI / 180, 'z');
+
   // mat4.rotate(modelViewMatrix,  // destination matrix
   //             modelViewMatrix,  // matrix to rotate
   //             cubeRotation * .7,// amount to rotate in radians
