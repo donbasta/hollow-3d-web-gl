@@ -12,6 +12,15 @@ export const create = () => {
     ];
 };
 
+const transpose = (matrix) => {
+    return [
+        matrix[0], matrix[4], matrix[8], matrix[12],
+        matrix[1], matrix[5], matrix[9], matrix[13],
+        matrix[2], matrix[6], matrix[10], matrix[14],
+        matrix[3], matrix[7], matrix[11], matrix[15]
+    ];
+}
+
 const multiplyMatrixAndPoint = (matrix, point) => {
     // Give a simple variable name to each part of the matrix, a column and row number
     let c0r0 = matrix[ 0], c1r0 = matrix[ 1], c2r0 = matrix[ 2], c3r0 = matrix[ 3];
@@ -123,4 +132,76 @@ export const rotate = (mat, angle, axis) => {
 
 export const translate = (mat, vec) => {
     return multiplyMatrices(mat, translationMatrix(vec[0], vec[1], vec[2]));
+}
+
+const projector = {
+    'orthographic' : [
+        1, 0, 0, 0,
+        0, 1, 0, 0,
+        0, 0, -1, -1,
+        0, 0, 0, 0
+    ],
+    'default' : [
+        1.8106601238250732, 0, 0, 0,
+        0, 2.4142136573791504, 0, 0,
+        0, 0, -1.0020020008087158, -1,
+        0, 0, -0.20020020008087158, 0
+    ]
+}
+
+export const getProjectorType = (projectorType) => {
+    if (projector[projectorType] === undefined) {
+        return projector['default'];
+    }
+    return projector[projectorType];
+}
+
+const frustum = (left, right, bottom, top, near, far) => {
+    const rl = right - left;
+    const tb = top - bottom;
+    const fn = far - near;
+
+    return [
+        (near * 2.0) / rl, 0, 0, 0,
+        0, (near * 2.0) / tb, 0, 0,
+        (right + left) / rl, (top + bottom) / tb, -(far + near) / fn, -1,
+        0, 0, -(far * near * 2.0) / fn, 0
+    ];
+}
+
+export const perspective = (fovy, aspect, near, far) => {
+    const top = near * Math.tan(fovy / 2);
+    const right = top * aspect;
+    return frustum(-right, right, -top, top, near, far);
+}
+
+export const orthographic = (left, right, bottom, top, near, far) => {
+    const rl = right - left;
+    const tb = top - bottom;
+    const fn = far - near;
+    
+    return transpose([
+        2/rl, 0, 0, 0,
+        0, 2/tb, 0, 0,
+        0, 0, -2/fn, 0,
+        -(left+right)/rl, -(top+bottom)/tb, -(far+near)/fn, 1
+    ]);
+}
+
+export const oblique = (theta, phi) => {
+    const cotT = 1/Math.tan(theta);
+    const cotP = 1/Math.tan(phi);
+
+    const H = transpose([
+        1, 0, 0, 0,
+        0, 1, 0, 0,
+        cotT, cotP, 1, 0,
+        0, 0, 0, 1,
+    ]);
+
+    let mat = create();
+    mat[10] = 0;
+    mat = multiplyMatrices(mat, orthographic(-1, 1, -1, 1, -1, 1));
+    mat = multiplyMatrices(mat, H);
+    return mat;
 }

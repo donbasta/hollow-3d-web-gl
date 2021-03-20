@@ -13,7 +13,7 @@ const App = () => {
     const canvasRef = useRef(null)
 
     // ganti model di sini
-    const model = hollowCube;
+    const model = modelPrisma;
 
     //ganti model disini
     const [currentModel, changeModel] = useState(model);
@@ -26,6 +26,9 @@ const App = () => {
     });
     const [zoom, setZoom] = useState(-6.0);
     const [translate, setTranslate] = useState(0.0);
+
+    //status projection type
+    const [proj, setProjectionType] = useState("perspective");
 
     //gl attribute
     const [glAttr, setGlAttr] = useState(null);
@@ -56,7 +59,7 @@ const App = () => {
             buffers: buffers
         });
 
-        drawScene(gl, programInfo, buffers, currentModel.positions.length / 3, rotationAngle, zoom, translate);
+        drawScene(gl, programInfo, buffers, currentModel.positions.length / 3, rotationAngle, zoom, translate, proj);
 
     }, []);
 
@@ -67,7 +70,7 @@ const App = () => {
             z: rotationAngle.z
         });
         // draw();
-        drawScene(glAttr.gl, glAttr.programInfo, glAttr.buffers, currentModel.positions.length / 3, rotationAngle, zoom, translate);
+        drawScene(glAttr.gl, glAttr.programInfo, glAttr.buffers, currentModel.positions.length / 3, rotationAngle, zoom, translate, proj);
     };
 
     const handleY = (angle) => {
@@ -77,7 +80,7 @@ const App = () => {
             z: rotationAngle.z
         });
         // draw();
-        drawScene(glAttr.gl, glAttr.programInfo, glAttr.buffers, currentModel.positions.length / 3, rotationAngle, zoom, translate);
+        drawScene(glAttr.gl, glAttr.programInfo, glAttr.buffers, currentModel.positions.length / 3, rotationAngle, zoom, translate, proj);
     };
 
     const handleZ = (angle) => {
@@ -87,19 +90,19 @@ const App = () => {
             z: angle
         });
         // draw();
-        drawScene(glAttr.gl, glAttr.programInfo, glAttr.buffers, currentModel.positions.length / 3, rotationAngle, zoom, translate);
+        drawScene(glAttr.gl, glAttr.programInfo, glAttr.buffers, currentModel.positions.length / 3, rotationAngle, zoom, translate, proj);
     };
 
     const handleZoom = (coef) => {
         setZoom(-coef/10.0);
         // draw();
-        drawScene(glAttr.gl, glAttr.programInfo, glAttr.buffers, currentModel.positions.length / 3, rotationAngle, zoom, translate);
+        drawScene(glAttr.gl, glAttr.programInfo, glAttr.buffers, currentModel.positions.length / 3, rotationAngle, zoom, translate, proj);
     }
 
     const handleTranslate = (coef) => {
         setTranslate(coef/10);
         // draw();
-        drawScene(glAttr.gl, glAttr.programInfo, glAttr.buffers, currentModel.positions.length / 3, rotationAngle, zoom, translate);
+        drawScene(glAttr.gl, glAttr.programInfo, glAttr.buffers, currentModel.positions.length / 3, rotationAngle, zoom, translate, proj);
     }
 
     return (
@@ -112,7 +115,7 @@ const App = () => {
             <p> Rotate z-axis </p>
             <Slider min={0} max={360} value={0} onChange={handleZ}/>
             <p> Scale </p>
-            <Slider min={30} max={200} value={60} onChange={handleZoom}/>
+            <Slider min={30} max={600} value={60} onChange={handleZoom}/>
             <p> Translate x </p>
             <Slider min={-50} max={50} value={0} onChange={handleTranslate}/>
         </div>
