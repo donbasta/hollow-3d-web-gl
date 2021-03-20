@@ -115,7 +115,7 @@ export const rotate = (mat, angle, axis) => {
     if (axis === 'x') {
         return multiplyMatrices(mat, rotateXMatrix(angle));
     } else if (axis === 'y') {
-        return multiplyMatrices(mat, rotateXMatrix(angle));
+        return multiplyMatrices(mat, rotateYMatrix(angle));
     } else if (axis === 'z') {
         return multiplyMatrices(mat, rotateZMatrix(angle));
     }
