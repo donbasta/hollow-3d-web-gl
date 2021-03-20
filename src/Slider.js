@@ -25,7 +25,11 @@ const Slider = (props) => {
                 className="slider"
             >
             </input>
-            <p>Value: {slider.value}</p>
+            {props.show ? 
+                <p>Value: {slider.value}</p>
+                :
+                ""
+            }
         </div>
     )
 }

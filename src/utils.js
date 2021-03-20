@@ -125,8 +125,7 @@ const initBuffers = (gl, model) => {
   };
 }
 
-const drawScene = (gl, programInfo, buffers, count, angle, zoom) => {
-  console.log("DEBUGGGG  ", angle);
+const drawScene = (gl, programInfo, buffers, count, angle, zoom, translate) => {
   gl.clearColor(0.5, 0.5, 0.2, 0.8);  // Clear to black, fully opaque
   gl.clearDepth(1.0);                 // Clear everything
   gl.enable(gl.DEPTH_TEST);           // Enable depth testing
@@ -189,6 +188,7 @@ const drawScene = (gl, programInfo, buffers, count, angle, zoom) => {
   // mat4.translate(modelViewMatrix,     // destination matrix
   //                modelViewMatrix,     // matrix to translate
   //                [-0.0, 0.0, -6.0]);  // amount to translate
+  modelViewMatrix = mat4.translate(modelViewMatrix, [translate, 0.0, 0.0]);
   modelViewMatrix = mat4.translate(modelViewMatrix, [-0.0, 0.0, zoom]);
 
 
@@ -214,8 +214,6 @@ const drawScene = (gl, programInfo, buffers, count, angle, zoom) => {
   //             modelViewMatrix,  // matrix to rotate
   //             cubeRotation * .7,// amount to rotate in radians
   //             [0, 1, 0]);       // axis to rotate around (X)
-
-  console.log(modelViewMatrix)
 
   //static
   // const modelViewMatrix = [
