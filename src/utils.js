@@ -1,3 +1,4 @@
+import { mat4 } from 'gl-matrix';
 
 const initShaderProgram = (gl) => {
     const vsSource = `
@@ -124,6 +125,7 @@ const initBuffers = (gl, model) => {
 }
 
 const drawScene = (gl, programInfo, buffers, count, angle) => {
+  console.log("DEBUGGGG  ", angle);
   gl.clearColor(0.5, 0.5, 0.2, 0.8);  // Clear to black, fully opaque
   gl.clearDepth(1.0);                 // Clear everything
   gl.enable(gl.DEPTH_TEST);           // Enable depth testing
@@ -178,7 +180,7 @@ const drawScene = (gl, programInfo, buffers, count, angle) => {
 
   // Set the drawing position to the "identity" point, which is
   // the center of the scene.
-  /*const modelViewMatrix = mat4.create();
+  const modelViewMatrix = mat4.create();
 
   // Now move the drawing position a bit to where we want to
   // start drawing the square.
@@ -188,34 +190,42 @@ const drawScene = (gl, programInfo, buffers, count, angle) => {
                  [-0.0, 0.0, -6.0]);  // amount to translate
   mat4.rotate(modelViewMatrix,  // destination matrix
               modelViewMatrix,  // matrix to rotate
-              cubeRotation,     // amount to rotate in radians
-              [0, 0, 1]);       // axis to rotate around (Z)
+              angle.x * Math.PI / 180,     // amount to rotate in radians
+              [1, 0, 0]);       // axis to rotate around (Z)
   mat4.rotate(modelViewMatrix,  // destination matrix
-              modelViewMatrix,  // matrix to rotate
-              cubeRotation * .7,// amount to rotate in radians
-              [0, 1, 0]);       // axis to rotate around (X)
+      modelViewMatrix,  // matrix to rotate
+      angle.y * Math.PI / 180,     // amount to rotate in radians
+      [0, 1, 0]);       // axis to rotate around (Z)
+  mat4.rotate(modelViewMatrix,  // destination matrix
+      modelViewMatrix,  // matrix to rotate
+      angle.z * Math.PI / 180,     // amount to rotate in radians
+      [0, 0, 1]);       // axis to rotate around (Z)
+  // mat4.rotate(modelViewMatrix,  // destination matrix
+  //             modelViewMatrix,  // matrix to rotate
+  //             cubeRotation * .7,// amount to rotate in radians
+  //             [0, 1, 0]);       // axis to rotate around (X)
 
-  console.log(modelViewMatrix)*/
+  console.log(modelViewMatrix)
 
   //static
-  const modelViewMatrix = [
-    1,
-    0,
-    0,
-    0,
-    0,
-    1,
-    0,
-    0,
-    0,
-    0,
-    1,
-    0,
-    0,
-    0,
-    -6,
-    1
-  ]
+  // const modelViewMatrix = [
+  //   1,
+  //   0,
+  //   0,
+  //   0,
+  //   0,
+  //   1,
+  //   0,
+  //   0,
+  //   0,
+  //   0,
+  //   1,
+  //   0,
+  //   0,
+  //   0,
+  //   -6,
+  //   1
+  // ]
   // Tell WebGL how to pull out the positions from the position
   // buffer into the vertexPosition attribute
   {
