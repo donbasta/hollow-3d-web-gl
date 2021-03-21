@@ -3,12 +3,6 @@ import './App.css'
 import {initShaderProgram, initBuffers, drawScene} from './utils'
 import Slider from './Slider'
 
-
-//import model di sini
-import modelPrisma from './modelPrisma.json';
-import modelSimple from './modelSimple.json';
-import hollowCube from './hollowCube.json';
-
 const App = () => {
     const [programState, setProgramState] = useState(null)
     const canvasRef = useRef(null)
@@ -16,11 +10,12 @@ const App = () => {
     const [saveUrl, setSaveUrl] = useState(null)
     const [shading, setShading] = useState(false)
 
-    // ganti model di sini
-    const model = modelPrisma;
 
     //ganti model disini
-    const [currentModel, changeModel] = useState(model);
+    const [currentModel, changeModel] = useState({
+        positions: [-0.8,0.8,1,-1,1,1,0.8,0.8,1,0.8,0.8,1,1,1,1,-1,1,1,0.8,0.8,1,1,1,1,0.8,-0.8,1,1,1,1,1,-1,1,0.8,-0.8,1,0.8,-0.8,1,1,-1,1,-0.8,-0.8,1,1,-1,1,-1,-1,1,-0.8,-0.8,1,-0.8,-0.8,1,-1,-1,1,-0.8,0.8,1,-1,-1,1,-1,1,1,-0.8,0.8,1,1,1,1,1,-1,1,1,1,-1,1,1,-1,1,-1,-1,1,-1,1,-1,-1,1,-1,1,1,-1,-1,-1,-1,-1,-1,-1,1,-1,-1,1,1,1,1,1,-1,1,1,1,1,-1,1,1,-1,-1,1,-1,-1,1,1,-1,-1,1,1,-1,1,-1,-1,-1,-1,-1,-1,1,-1,-1,1,-1,1,-0.4,0.4,-1,-1,1,-1,0.4,0.4,-1,0.4,0.4,-1,1,1,-1,-1,1,-1,0.4,0.4,-1,1,1,-1,0.4,-0.4,-1,1,1,-1,1,-1,-1,0.4,-0.4,-1,0.4,-0.4,-1,1,-1,-1,-0.4,-0.4,-1,1,-1,-1,-1,-1,-1,-0.4,-0.4,-1,-0.4,-0.4,-1,-1,-1,-1,-0.4,0.4,-1,-1,-1,-1,-1,1,-1,-0.4,0.4,-1,0.8,0.8,1,0.8,-0.8,1,0.4,0.4,-1,0.4,0.4,-1,0.4,-0.4,-1,0.8,-0.8,1,-0.8,0.8,1,-0.8,-0.8,1,-0.4,-0.4,-1,-0.4,-0.4,-1,-0.4,0.4,-1,-0.8,0.8,1,0.8,0.8,1,0.4,0.4,-1,-0.4,0.4,-1,-0.4,0.4,-1,-0.8,0.8,1,0.8,0.8,1,0.8,-0.8,1,0.4,-0.4,-1,-0.4,-0.4,-1,-0.4,-0.4,-1,-0.8,-0.8,1,0.8,-0.8,1],
+        colors: [0.5,0.2,0.3,1,0.5,0.2,0.3,1,0.5,0.2,0.3,1,0.5,0.2,0.3,1,0.5,0.2,0.3,1,0.5,0.2,0.3,1,0.5,0.2,0.3,1,0.5,0.2,0.3,1,0.5,0.2,0.3,1,0.5,0.2,0.3,1,0.5,0.2,0.3,1,0.5,0.2,0.3,1,0.5,0.2,0.3,1,0.5,0.2,0.3,1,0.5,0.2,0.3,1,0.5,0.2,0.3,1,0.5,0.2,0.3,1,0.5,0.2,0.3,1,0.5,0.2,0.3,1,0.5,0.2,0.3,1,0.5,0.2,0.3,1,0.5,0.2,0.3,1,0.5,0.2,0.3,1,0.5,0.2,0.3,1,0.6,0.4,0.3,1,0.6,0.4,0.3,1,0.6,0.4,0.3,1,0.6,0.4,0.3,1,0.6,0.4,0.3,1,0.6,0.4,0.3,1,0.7,0.3,0.3,1,0.7,0.3,0.3,1,0.7,0.3,0.3,1,0.7,0.3,0.3,1,0.7,0.3,0.3,1,0.7,0.3,0.3,1,0.8,0.2,0.2,1,0.8,0.2,0.2,1,0.8,0.2,0.2,1,0.8,0.2,0.2,1,0.8,0.2,0.2,1,0.8,0.2,0.2,1,0.8,0.1,0.3,1,0.8,0.1,0.3,1,0.8,0.1,0.3,1,0.8,0.1,0.3,1,0.8,0.1,0.3,1,0.8,0.1,0.3,1,0.9,0.5,0.3,1,0.9,0.5,0.3,1,0.9,0.5,0.3,1,0.9,0.5,0.3,1,0.9,0.5,0.3,1,0.9,0.5,0.3,1,0.9,0.5,0.3,1,0.9,0.5,0.3,1,0.9,0.5,0.3,1,0.9,0.5,0.3,1,0.9,0.5,0.3,1,0.9,0.5,0.3,1,0.9,0.5,0.3,1,0.9,0.5,0.3,1,0.9,0.5,0.3,1,0.9,0.5,0.3,1,0.9,0.5,0.3,1,0.9,0.5,0.3,1,0.9,0.5,0.3,1,0.9,0.5,0.3,1,0.9,0.5,0.3,1,0.9,0.5,0.3,1,0.9,0.5,0.3,1,0.9,0.5,0.3,1,1,0.1,0.5,1,1,0.1,0.5,1,1,0.1,0.5,1,1,0.1,0.5,1,1,0.1,0.5,1,1,0.1,0.5,1,0.9,1,0.4,1,0.9,1,0.4,1,0.9,1,0.4,1,0.9,1,0.4,1,0.9,1,0.4,1,0.9,1,0.4,1,0.65,0.32,0.412,1,0.65,0.32,0.412,1,0.65,0.32,0.412,1,0.65,0.32,0.412,1,0.65,0.32,0.412,1,0.65,0.32,0.412,1,0.45,0.12,0.22,1,0.45,0.12,0.22,1,0.45,0.12,0.22,1,0.45,0.12,0.22,1,0.45,0.12,0.22,1,0.45,0.12,0.22,1]
+    });
 
     //status rotasi, dilatasi dan translasi
     const [rotationAngle, setRotationAngle] = useState({
@@ -130,8 +125,13 @@ const App = () => {
         drawScene(glAttr.gl, glAttr.programInfo, glAttr.buffers, currentModel.positions.length / 3, rotationAngle, zoom, translate, proj);
     }
 
+    const onProjectionChange = (e) => {
+        console.log(e.target.value)
+        setProjectionType(e.target.value)
+        drawScene(glAttr.gl, glAttr.programInfo, glAttr.buffers, currentModel.positions.length / 3, rotationAngle, zoom, translate, proj);
+    }
+
     const handleReset = () => {
-        console.log("HALO")
         setRotationAngle({
             x: 0,
             y: 0,
@@ -167,8 +167,6 @@ const App = () => {
             }
         }
         reader.readAsText(files)
-
-        
     }   
 
     return (
@@ -184,12 +182,17 @@ const App = () => {
             <Slider min={30} max={600} value={-10 * zoom} onChange={handleZoom}/>
             <p> Translate x </p>
             <Slider min={-50} max={50} value={0} onChange={handleTranslate}/>
+            <select className="selection" value={proj} onChange={onProjectionChange}>
+                <option value="perspective">Perspective</option>
+                <option value="oblique">Oblique</option>
+                <option value="orthographic">Orthographic</option>
+            </select>
             <button onClick={handleReset} className="btn">Reset Default View</button>
             <button className="btn">{
                 shading ? 'Turn Off Shading' : 'Turn On Shading'
             }</button>
             <input onChange={handleFileChange} type="file" id="files" name="files[]"/>
-            <a download="myModel.json" href={saveUrl}>Download as Text File</a>
+            <a className="btn" download="myModel.json" href={saveUrl}>Download as Text File</a>
         </div>
     )
 }
