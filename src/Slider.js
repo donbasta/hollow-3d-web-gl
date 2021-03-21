@@ -1,11 +1,18 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import './slider.css';
 import { useState } from 'react';
-
 const Slider = (props) => {
     const [slider, setSlider] = useState({
         value: props.value,
     })
+
+    useEffect(() => {
+        setSlider({
+            value: props.value
+        });
+        console.log(slider)
+    }, [props.value]);
+
 
     const onSlide = (e) => {
         setSlider({

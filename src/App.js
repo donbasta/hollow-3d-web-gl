@@ -3,6 +3,7 @@ import './App.css'
 import {initShaderProgram, initBuffers, drawScene} from './utils'
 import Slider from './Slider'
 
+
 //import model di sini
 import modelPrisma from './modelPrisma.json';
 import modelSimple from './modelSimple.json';
@@ -11,6 +12,8 @@ import hollowCube from './hollowCube.json';
 const App = () => {
     const [programState, setProgramState] = useState(null)
     const canvasRef = useRef(null)
+
+    const [shading, setShading] = useState(false)
 
     // ganti model di sini
     const model = modelPrisma;
@@ -105,19 +108,37 @@ const App = () => {
         drawScene(glAttr.gl, glAttr.programInfo, glAttr.buffers, currentModel.positions.length / 3, rotationAngle, zoom, translate, proj);
     }
 
+    const handleReset = () => {
+        console.log("HALO")
+        setRotationAngle({
+            x: 0,
+            y: 0,
+            z: 0
+        })
+        setProjectionType("perspective")
+        setZoom(-6.0)
+        setTranslate(0.0)
+
+        drawScene(glAttr.gl, glAttr.programInfo, glAttr.buffers, currentModel.positions.length / 3, rotationAngle, zoom, translate, proj);
+    };
+
     return (
         <div>
             <canvas ref={canvasRef} width="640" height="480"></canvas>
             <p> Rotate x-axis </p>
-            <Slider min={0} max={360} value={0} onChange={handleX}/>
+            <Slider min={0} max={360} value={rotationAngle.x} onChange={handleX}/>
             <p> Rotate y-axis </p>
-            <Slider min={0} max={360} value={0} onChange={handleY}/>
+            <Slider min={0} max={360} value={rotationAngle.y} onChange={handleY}/>
             <p> Rotate z-axis </p>
-            <Slider min={0} max={360} value={0} onChange={handleZ}/>
+            <Slider min={0} max={360} value={rotationAngle.z} onChange={handleZ}/>
             <p> Scale </p>
-            <Slider min={30} max={600} value={60} onChange={handleZoom}/>
+            <Slider min={30} max={600} value={-10 * zoom} onChange={handleZoom}/>
             <p> Translate x </p>
             <Slider min={-50} max={50} value={0} onChange={handleTranslate}/>
+            <button onClick={handleReset} className="btn">Reset Default View</button>
+            <button className="btn">{
+                shading ? 'Turn Off Shading' : 'Turn On Shading'
+            }</button>
         </div>
     )
 }
