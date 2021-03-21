@@ -64,7 +64,7 @@ const App = () => {
 
         drawScene(gl, programInfo, buffers, currentModel.positions.length / 3, rotationAngle, zoom, translate, proj);
 
-    }, []);
+    }, [currentModel]);
 
     const handleX = (angle) => {
         setRotationAngle({
@@ -122,6 +122,26 @@ const App = () => {
         drawScene(glAttr.gl, glAttr.programInfo, glAttr.buffers, currentModel.positions.length / 3, rotationAngle, zoom, translate, proj);
     };
 
+    const handleFileChange = (e) => {
+        let files = e.target.files[0]
+
+        console.log(files)
+
+
+        const reader = new FileReader();
+
+        reader.onload = () => {
+            try {
+                changeModel(JSON.parse(reader.result))
+            } catch (ex) {
+                console.log(ex)
+            }
+        }
+        reader.readAsText(files)
+
+        
+    }   
+
     return (
         <div>
             <canvas ref={canvasRef} width="640" height="480"></canvas>
@@ -139,6 +159,7 @@ const App = () => {
             <button className="btn">{
                 shading ? 'Turn Off Shading' : 'Turn On Shading'
             }</button>
+            <input onChange={handleFileChange} type="file" id="files" name="files[]"/>
         </div>
     )
 }
