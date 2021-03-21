@@ -13,6 +13,7 @@ const App = () => {
     const [programState, setProgramState] = useState(null)
     const canvasRef = useRef(null)
 
+    const [saveUrl, setSaveUrl] = useState(null)
     const [shading, setShading] = useState(false)
 
     // ganti model di sini
@@ -65,6 +66,27 @@ const App = () => {
         drawScene(gl, programInfo, buffers, currentModel.positions.length / 3, rotationAngle, zoom, translate, proj);
 
     }, [currentModel]);
+
+    useEffect(() => {
+        const dataToSave = {
+            positions: currentModel.positions,
+            colors: currentModel.colors,
+            rotangle: rotationAngle,
+            zoom: zoom,
+            translate: translate,
+            proj: proj
+        }
+
+        const textSave = JSON.stringify(dataToSave) 
+
+        const data = new Blob([textSave], {type: 'text/json'})
+
+        const url = window.URL.createObjectURL(data)
+
+        setSaveUrl(url)
+
+        
+    }, [currentModel, rotationAngle, zoom, translate, proj])
 
     const handleX = (angle) => {
         setRotationAngle({
@@ -132,7 +154,14 @@ const App = () => {
 
         reader.onload = () => {
             try {
-                changeModel(JSON.parse(reader.result))
+                const data = JSON.parse(reader.result)
+
+                console.log(data)
+                setRotationAngle(data.rotangle)
+                setZoom(data.zoom)
+                setTranslate(data.translate)
+                setProjectionType(data.proj)
+                changeModel({positions: data.positions, colors: data.colors})
             } catch (ex) {
                 console.log(ex)
             }
@@ -160,6 +189,7 @@ const App = () => {
                 shading ? 'Turn Off Shading' : 'Turn On Shading'
             }</button>
             <input onChange={handleFileChange} type="file" id="files" name="files[]"/>
+            <a download="myModel.json" href={saveUrl}>Download as Text File</a>
         </div>
     )
 }
