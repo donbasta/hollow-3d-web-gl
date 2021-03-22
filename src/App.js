@@ -192,7 +192,20 @@ const App = () => {
                 shading ? 'Turn Off Shading' : 'Turn On Shading'
             }</button>
             <input onChange={handleFileChange} type="file" id="files" name="files[]"/>
-            <a className="btn" download="myModel.json" href={saveUrl}>Download as Text File</a>
+            <a className="btn" download="myModel.json" href={saveUrl}>Download as JSON</a>
+            <div>
+                <h1>Help</h1>
+                <ul>
+                    <li>Use the slider above to rotate each axis</li>
+                    <li>To change the zooming, use the Scale slider above</li>
+                    <li>To translate along the x-axis, use the translate x slider</li>
+                    <li>To change the projection type, use the select box above</li>
+                    <li>To reset, click Reset Default View</li>
+                    <li>To turn on/off shading, click the turn on/off shading button</li>
+                    <li>To Save model and orientation, click Download as JSON</li>
+                    <li>To load model, click the choose file button and select your model</li>
+                </ul>
+            </div>
         </div>
     )
 }
