@@ -55,6 +55,10 @@ const loadShader = (gl, type, source) => {
     return shader
 }
 
+const initBuffersLight = (gl, model) => {
+
+}
+
 const initBuffers = (gl, model) => {
 
   // Create a buffer for the cube's vertex positions.
@@ -200,4 +204,4 @@ const drawScene = (gl, programInfo, buffers, count, angle, zoom, translate, proj
   }
 }
 
-export {initShaderProgram, loadShader, initBuffers, drawScene}
+export {initBuffersLight, initShaderProgram, loadShader, initBuffers, drawScene}

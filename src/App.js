@@ -1,6 +1,6 @@
 import React, {useState, useRef, useEffect} from 'react'
 import './App.css'
-import {initShaderProgram, initBuffers, drawScene} from './utils'
+import {initShaderProgram, initBuffers, initBuffersLight, drawScene} from './utils'
 import Slider from './Slider'
 
 const App = () => {
@@ -38,7 +38,16 @@ const App = () => {
 
         const shaderProgram = initShaderProgram(gl);
         
-        const programInfo = {
+        const programInfo = shading ? {
+            program: shaderProgram,
+            attribLocations: {
+                vertexPosition: gl.getAttribLocation(shaderProgram, 'aVertexPosition'),
+                vertexColor: gl.getAttribLocation(shaderProgram, 'aVertexColor'),
+            },
+            uniformLocations: {
+                projectionMatrix: gl.getUniformLocation(shaderProgram, 'uProjectionMatrix'),
+                modelViewMatrix: gl.getUniformLocation(shaderProgram, 'uModelViewMatrix'),
+            }} : {
             program: shaderProgram,
             attribLocations: {
                 vertexPosition: gl.getAttribLocation(shaderProgram, 'aVertexPosition'),
@@ -50,7 +59,7 @@ const App = () => {
             }
         };
     
-        const buffers = initBuffers(gl, currentModel);
+        const buffers = shading ? initBuffersLight(gl, currentModel) : initBuffers(gl, currentModel);
 
         setGlAttr({
             gl: gl,
@@ -60,7 +69,7 @@ const App = () => {
 
         drawScene(gl, programInfo, buffers, currentModel.positions.length / 3, rotationAngle, zoom, translate, proj);
 
-    }, [currentModel]);
+    }, [currentModel, shading]);
 
     useEffect(() => {
         const dataToSave = {
@@ -131,6 +140,10 @@ const App = () => {
         drawScene(glAttr.gl, glAttr.programInfo, glAttr.buffers, currentModel.positions.length / 3, rotationAngle, zoom, translate, proj);
     }
 
+    const handleShading = () => {
+        setShading(!shading);
+    }
+
     const handleReset = () => {
         setRotationAngle({
             x: 0,
@@ -188,7 +201,7 @@ const App = () => {
                 <option value="orthographic">Orthographic</option>
             </select>
             <button onClick={handleReset} className="btn">Reset Default View</button>
-            <button className="btn">{
+            <button onClick={handleShading} className="btn">{
                 shading ? 'Turn Off Shading' : 'Turn On Shading'
             }</button>
             <input onChange={handleFileChange} type="file" id="files" name="files[]"/>
