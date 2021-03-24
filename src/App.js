@@ -1,6 +1,6 @@
 import React, {useState, useRef, useEffect} from 'react'
 import './App.css'
-import {initShaderProgram, initBuffers, drawScene} from './utils'
+import {initShaderProgramLight, initShaderProgram, initBuffers, initBuffersLight, drawScene} from './utils'
 import Slider from './Slider'
 
 const App = () => {
@@ -36,9 +36,24 @@ const App = () => {
         const canvas = canvasRef.current;
         const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
 
-        const shaderProgram = initShaderProgram(gl);
+        const shaderProgram = shading ? initShaderProgramLight(gl) : initShaderProgram(gl);
         
-        const programInfo = {
+        const programInfo = shading ? {
+                withLight: true,
+                program: shaderProgram,
+                attribLocations: {
+                    vertexPosition: gl.getAttribLocation(shaderProgram, 'aVertexPosition'),
+                    vertexColor: gl.getAttribLocation(shaderProgram, 'aVertexColor'),
+                    normalLocation: gl.getAttribLocation(shaderProgram, 'aNormalLocation')
+                },
+                uniformLocations: {
+                    worldInverseTransposeLocation: gl.getUniformLocation(shaderProgram, 'u_worldInverseTranspose'),
+                    worldLocation: gl.getUniformLocation(shaderProgram, 'u_world'),
+                    projectionMatrix: gl.getUniformLocation(shaderProgram, 'uProjectionMatrix'),
+                    modelViewMatrix: gl.getUniformLocation(shaderProgram, 'uModelViewMatrix'),
+                    lightWorldPositionLocation: gl.getUniformLocation(shaderProgram, 'u_lightWorldPosition')
+                }
+            } : {
             program: shaderProgram,
             attribLocations: {
                 vertexPosition: gl.getAttribLocation(shaderProgram, 'aVertexPosition'),
@@ -50,7 +65,7 @@ const App = () => {
             }
         };
     
-        const buffers = initBuffers(gl, currentModel);
+        const buffers = shading ? initBuffersLight(gl, currentModel) : initBuffers(gl, currentModel);
 
         setGlAttr({
             gl: gl,
@@ -60,7 +75,7 @@ const App = () => {
 
         drawScene(gl, programInfo, buffers, currentModel.positions.length / 3, rotationAngle, zoom, translate, proj);
 
-    }, [currentModel]);
+    }, [currentModel, shading]);
 
     useEffect(() => {
         const dataToSave = {
@@ -89,7 +104,7 @@ const App = () => {
             y: rotationAngle.y,
             z: rotationAngle.z
         });
-        // draw();
+
         drawScene(glAttr.gl, glAttr.programInfo, glAttr.buffers, currentModel.positions.length / 3, rotationAngle, zoom, translate, proj);
     };
 
@@ -99,7 +114,7 @@ const App = () => {
             y: angle,
             z: rotationAngle.z
         });
-        // draw();
+
         drawScene(glAttr.gl, glAttr.programInfo, glAttr.buffers, currentModel.positions.length / 3, rotationAngle, zoom, translate, proj);
     };
 
@@ -109,19 +124,19 @@ const App = () => {
             y: rotationAngle.y,
             z: angle
         });
-        // draw();
+
         drawScene(glAttr.gl, glAttr.programInfo, glAttr.buffers, currentModel.positions.length / 3, rotationAngle, zoom, translate, proj);
     };
 
     const handleZoom = (coef) => {
         setZoom(-coef/10.0);
-        // draw();
+
         drawScene(glAttr.gl, glAttr.programInfo, glAttr.buffers, currentModel.positions.length / 3, rotationAngle, zoom, translate, proj);
     }
 
     const handleTranslate = (coef) => {
         setTranslate(coef/10);
-        // draw();
+
         drawScene(glAttr.gl, glAttr.programInfo, glAttr.buffers, currentModel.positions.length / 3, rotationAngle, zoom, translate, proj);
     }
 
@@ -129,6 +144,10 @@ const App = () => {
         console.log(e.target.value)
         setProjectionType(e.target.value)
         drawScene(glAttr.gl, glAttr.programInfo, glAttr.buffers, currentModel.positions.length / 3, rotationAngle, zoom, translate, proj);
+    }
+
+    const handleShading = () => {
+        setShading(!shading);
     }
 
     const handleReset = () => {
@@ -188,7 +207,7 @@ const App = () => {
                 <option value="orthographic">Orthographic</option>
             </select>
             <button onClick={handleReset} className="btn">Reset Default View</button>
-            <button className="btn">{
+            <button onClick={handleShading} className="btn">{
                 shading ? 'Turn Off Shading' : 'Turn On Shading'
             }</button>
             <input onChange={handleFileChange} type="file" id="files" name="files[]"/>
