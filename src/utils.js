@@ -183,21 +183,112 @@ const initBuffers = (gl, model) => {
   };
 }
 
+// const drawScene = (gl, programInfo, buffers, count, angle, zoom, translate, proj) => {
+//   gl.clearColor(0.5, 0.5, 0.2, 0.8);  // Clear to black, fully opaque
+//   gl.clearDepth(1.0);                 // Clear everything
+//   gl.enable(gl.DEPTH_TEST);           // Enable depth testing
+//   gl.depthFunc(gl.LEQUAL);            // Near things obscure far things
+
+//   // Clear the canvas before we start drawing on it.
+//   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
+//   // Create a perspective matrix, a special matrix that is
+//   // used to simulate the distortion of perspective in a camera.
+//   // Our field of view is 45 degrees, with a width/height
+//   // ratio that matches the display size of the canvas
+//   // and we only want to see objects between 0.1 units
+//   // and 100 units away from the camera.
+//   let projectionMatrix = mat4.getProjectorType('default');
+//   if (proj === 'perspective') {
+//     const fieldOfView = 45 * Math.PI / 180;   // in radians
+//     const aspect = gl.canvas.clientWidth / gl.canvas.clientHeight;
+//     const zNear = 0.1;
+//     const zFar = 100.0;
+//     projectionMatrix = mat4.perspective(fieldOfView, aspect, zNear, zFar);
+//   } else if (proj === 'orthographic') {
+//     projectionMatrix = mat4.orthographic(-7, 7, -7, 7, -7, 7);
+//   } else if (proj === 'oblique') {
+//     projectionMatrix = mat4.oblique(60 * Math.PI / 180, 15 * Math.PI / 180);
+//   }
+  
+//   let modelViewMatrix = mat4.create();
+
+//   modelViewMatrix = mat4.translate(modelViewMatrix, [translate, 0.0, 0.0]);
+//   modelViewMatrix = mat4.translate(modelViewMatrix, [-0.0, 0.0, zoom]);
+//   modelViewMatrix = mat4.rotate(modelViewMatrix, angle.x * Math.PI / 180, 'x');
+//   modelViewMatrix = mat4.rotate(modelViewMatrix, angle.y * Math.PI / 180, 'y');
+//   modelViewMatrix = mat4.rotate(modelViewMatrix, angle.z * Math.PI / 180, 'z');
+
+//   {
+//     const numComponents = 3;
+//     const type = gl.FLOAT;
+//     const normalize = false;
+//     const stride = 0;
+//     const offset = 0;
+//     gl.bindBuffer(gl.ARRAY_BUFFER, buffers.position);
+//     gl.vertexAttribPointer(
+//         programInfo.attribLocations.vertexPosition,
+//         numComponents,
+//         type,
+//         normalize,
+//         stride,
+//         offset);
+//     gl.enableVertexAttribArray(
+//         programInfo.attribLocations.vertexPosition);
+//   }
+
+//   // Tell WebGL how to pull out the colors from the color buffer
+//   // into the vertexColor attribute.
+//   {
+//     const numComponents = 4;
+//     const type = gl.FLOAT;
+//     const normalize = false;
+//     const stride = 0;
+//     const offset = 0;
+//     gl.bindBuffer(gl.ARRAY_BUFFER, buffers.color);
+//     gl.vertexAttribPointer(
+//         programInfo.attribLocations.vertexColor,
+//         numComponents,
+//         type,
+//         normalize,
+//         stride,
+//         offset);
+//     gl.enableVertexAttribArray(
+//         programInfo.attribLocations.vertexColor);
+//   }
+
+//   // Tell WebGL which indices to use to index the vertices
+//   gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, buffers.indices);
+
+//   // Tell WebGL to use our program when drawing
+//   gl.useProgram(programInfo.program);
+
+//   // Set the shader uniforms
+//   gl.uniformMatrix4fv(
+//       programInfo.uniformLocations.projectionMatrix,
+//       false,
+//       projectionMatrix);
+//   gl.uniformMatrix4fv(
+//       programInfo.uniformLocations.modelViewMatrix,
+//       false,
+//       modelViewMatrix);
+
+//   {
+//     const vertexCount = count
+//     const type = gl.UNSIGNED_SHORT;
+//     const offset = 0;
+//     gl.drawElements(gl.TRIANGLES, vertexCount, type, offset);
+//   }
+// }
+
 const drawScene = (gl, programInfo, buffers, count, angle, zoom, translate, proj) => {
   gl.clearColor(0.5, 0.5, 0.2, 0.8);  // Clear to black, fully opaque
   gl.clearDepth(1.0);                 // Clear everything
   gl.enable(gl.DEPTH_TEST);           // Enable depth testing
   gl.depthFunc(gl.LEQUAL);            // Near things obscure far things
 
-  // Clear the canvas before we start drawing on it.
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-  // Create a perspective matrix, a special matrix that is
-  // used to simulate the distortion of perspective in a camera.
-  // Our field of view is 45 degrees, with a width/height
-  // ratio that matches the display size of the canvas
-  // and we only want to see objects between 0.1 units
-  // and 100 units away from the camera.
   let projectionMatrix = mat4.getProjectorType('default');
   if (proj === 'perspective') {
     const fieldOfView = 45 * Math.PI / 180;   // in radians
@@ -237,8 +328,6 @@ const drawScene = (gl, programInfo, buffers, count, angle, zoom, translate, proj
         programInfo.attribLocations.vertexPosition);
   }
 
-  // Tell WebGL how to pull out the colors from the color buffer
-  // into the vertexColor attribute.
   {
     const numComponents = 4;
     const type = gl.FLOAT;
@@ -257,13 +346,45 @@ const drawScene = (gl, programInfo, buffers, count, angle, zoom, translate, proj
         programInfo.attribLocations.vertexColor);
   }
 
-  // Tell WebGL which indices to use to index the vertices
-  gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, buffers.indices);
+  if (programInfo.withLight === true) {
+    {
+      const numComponents = 3;
+      const type = gl.FLOAT;
+      const normalize = false;
+      const stride = 0;
+      const offset = 0;
+      gl.bindBuffer(gl.ARRAY_BUFFER, buffers.normal);
+      gl.vertexAttribPointer(
+          programInfo.attribLocations.normalLocation,
+          numComponents,
+          type,
+          normalize,
+          stride,
+          offset);
+      gl.enableVertexAttribArray(
+          programInfo.attribLocations.normalLocation);
+    }
 
-  // Tell WebGL to use our program when drawing
+    const worldMatrix = mat4.create();
+    const worldInverseMatrix = mat4.inverse(worldMatrix);
+    const worldInverseTransposeMatrix = mat4.transpose(worldInverseMatrix);
+
+    gl.uniformMatrix4fv(
+      programInfo.uniformLocations.worldInverseTransposeLocation,
+      false, 
+      worldInverseTransposeMatrix
+    );
+    gl.uniformMatrix4fv(
+      programInfo.uniformLocations.worldLocation, 
+      false, 
+      worldMatrix
+    );
+    
+    gl.uniform3fv(programInfo.uniformLocations.lightWorldPositionLocation, [20, 30, 60]);
+  }
+
+
   gl.useProgram(programInfo.program);
-
-  // Set the shader uniforms
   gl.uniformMatrix4fv(
       programInfo.uniformLocations.projectionMatrix,
       false,
@@ -280,5 +401,6 @@ const drawScene = (gl, programInfo, buffers, count, angle, zoom, translate, proj
     gl.drawElements(gl.TRIANGLES, vertexCount, type, offset);
   }
 }
+
 
 export {initShaderProgramLight, initBuffersLight, initShaderProgram, loadShader, initBuffers, drawScene}
