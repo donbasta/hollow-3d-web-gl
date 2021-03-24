@@ -1,6 +1,64 @@
 // import { mat4 } from 'gl-matrix';
 import * as mat4 from './matrix.js';
 
+const initShaderProgramLight = (gl) => {
+  const vsSource = `
+    attribute vec4 aVertexPosition;
+    attribute vec4 aVertexColor;
+    attribute vec3 aNormalLocation;
+    
+    uniform vec3 u_lightWorldPosition;
+    uniform mat4 u_world;
+    //uniform mat4 u_worldViewProjection;
+    uniform mat4 u_worldInverseTranspose;
+    uniform mat4 uModelViewMatrix;
+    uniform mat4 uProjectionMatrix;
+    
+    varying vec3 v_normal;
+    varying vec3 v_surfaceToLight;
+
+    varying lowp vec4 vColor;
+    
+    void main() {
+      gl_Position = uProjectionMatrix * uModelViewMatrix * aVertexPosition;
+      v_normal = mat3(u_worldInverseTranspose) * aNormalLocation;
+      vec3 surfaceWorldPosition = (u_world * aVertexPosition).xyz;
+      v_surfaceToLight = u_lightWorldPosition - surfaceWorldPosition;
+      vColor = aVertexColor;
+    }
+  `
+  const fsSource = `
+    precision mediump float;
+    varying vec3 v_normal;
+    varying vec3 v_surfaceToLight;
+
+    varying lowp vec4 vColor;
+    
+    void main() {
+      vec3 normal = normalize(v_normal);
+      vec3 surfaceToLightDirection = normalize(v_surfaceToLight);
+      float light = dot(normal, surfaceToLightDirection);
+      gl_FragColor = vColor;
+      gl_FragColor.rgb *= light;
+    }
+    `
+
+    const vertexShader = loadShader(gl, gl.VERTEX_SHADER, vsSource)
+    const fragmentShader = loadShader(gl, gl.FRAGMENT_SHADER, fsSource)
+
+    const shaderProgram = gl.createProgram()
+    gl.attachShader(shaderProgram, vertexShader)
+    gl.attachShader(shaderProgram, fragmentShader)
+    gl.linkProgram(shaderProgram)
+
+    if (!gl.getProgramParameter(shaderProgram, gl.LINK_STATUS)) {
+        alert('Unable to initialize the shader program: ' + gl.getProgramInfoLog(shaderProgram))
+        return null
+    }
+
+    return shaderProgram
+}
+
 const initShaderProgram = (gl) => {
   const vsSource = `
     attribute vec4 aVertexPosition;
@@ -56,7 +114,26 @@ const loadShader = (gl, type, source) => {
 }
 
 const initBuffersLight = (gl, model) => {
+  const {positions, colors} = model
+  const normals = mat4.generateNormalsFromModel(positions);
 
+  const positionBuffer = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positions), gl.STATIC_DRAW);
+
+  const colorBuffer = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(colors), gl.STATIC_DRAW);
+
+  const normalBuffer = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, normalBuffer);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(normals), gl.STATIC_DRAW);
+
+  return {
+    position: positionBuffer,
+    color: colorBuffer,
+    normal: normalBuffer
+  };
 }
 
 const initBuffers = (gl, model) => {
@@ -204,4 +281,4 @@ const drawScene = (gl, programInfo, buffers, count, angle, zoom, translate, proj
   }
 }
 
-export {initBuffersLight, initShaderProgram, loadShader, initBuffers, drawScene}
+export {initShaderProgramLight, initBuffersLight, initShaderProgram, loadShader, initBuffers, drawScene}

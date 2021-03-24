@@ -205,3 +205,44 @@ export const oblique = (theta, phi) => {
     mat = multiplyMatrices(mat, H);
     return mat;
 }
+
+export const generateNormalsFromModel = (mat) => {
+    let ret = [];
+    for (let i = 0; i < mat.length; i += 9) {
+        const v1 = [mat[i], mat[i + 1], mat[i + 2]];
+        const v2 = [mat[i + 3], mat[i + 4], mat[i + 5]];
+        const v3 = [mat[i + 6], mat[i + 7], mat[i + 8]];
+        const normalVector = crossProduct(sub(v2, v1), sub(v3, v1));
+        const unitNormalVector = normalize(normalVector);
+        ret = ret.concat(unitNormalVector, unitNormalVector, unitNormalVector);
+    }
+    return ret;
+}
+
+const crossProduct = (a, b) => {
+    return [
+        a[1] * b[2] - a[2] * b[1],
+        a[2] * b[0] - a[0] * b[2],
+        a[0] * b[1] - a[1] * b[0]
+    ];
+}
+
+const sub = (a, b) => {
+    return [
+        a[0] - b[0],
+        a[1] - b[1],
+        a[2] - b[2]
+    ];
+}
+
+export const normalize = (v, dst) => {
+    dst = dst || new Array(3);
+    var length = Math.sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2]);
+    // make sure we don't divide by 0.
+    if (length > 0.00001) {
+      dst[0] = v[0] / length;
+      dst[1] = v[1] / length;
+      dst[2] = v[2] / length;
+    }
+    return dst;
+  }
