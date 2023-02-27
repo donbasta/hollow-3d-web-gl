@@ -4,12 +4,10 @@ import {initShaderProgramLight, initShaderProgram, initBuffers, initBuffersLight
 import Slider from './Slider'
 
 const App = () => {
-    const [programState, setProgramState] = useState(null)
     const canvasRef = useRef(null)
 
     const [saveUrl, setSaveUrl] = useState(null)
     const [shading, setShading] = useState(false)
-
 
     //ganti model disini
     const [currentModel, changeModel] = useState({
