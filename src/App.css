@@ -1,42 +1,43 @@
-*, html {
-	margin: 0;
-	padding: 0;
-	font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+*,
+html {
+  margin: 0;
+  padding: 0;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
 }
 canvas {
-	background-color: black;
+  background-color: black;
 }
 video {
-	display: none;
+  display: none;
 }
 
 .btn {
-	cursor: pointer;
-	text-decoration: none;
-	padding: 20px 15px;
-	margin: 10px;
-	border: 0;
-	font-size: 14px;
-	background-color: #4CAF50;
-	color: #FFF;
+  cursor: pointer;
+  text-decoration: none;
+  padding: 20px 15px;
+  margin: 10px;
+  border: 0;
+  font-size: 14px;
+  background-color: #4caf50;
+  color: #fff;
 }
 
 .btn:hover {
-	background-color: #66d169;
+  background-color: #66d169;
 }
 
 .btn:focus {
-	background-color: #3d9b40;
-	outline: none;
+  background-color: #3d9b40;
+  outline: none;
 }
 
 .selection {
-	padding: 20px 15px;
-	margin: 10px;
-	border: 1px solid rgb(173, 173, 173);
-	font-size: 14px;
+  padding: 20px 15px;
+  margin: 10px;
+  border: 1px solid rgb(173, 173, 173);
+  font-size: 14px;
 }
 
 .selection:focus {
-	outline: none;
+  outline: none;
 }
